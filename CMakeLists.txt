@@ -6,3 +6,8 @@ project(hello)
 add_executable(hello main.cpp)
 
 add_subdirectory("test")
+
+set(INSTALL_DIR ${CMAKE_SOURCE_DIR}/install)
+
+install(TARGETS hello DESTINATION ${INSTALL_DIR})
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/test/TestCrossCompile DESTINATION ${INSTALL_DIR})

@@ -52,9 +52,18 @@
         {
             "label": "Copy File To Remote",
             "type": "shell",
-            "command": "scp -r ${workspaceRoot}/build/${input:BUILD_TYPE} pi@192.168.1.103:~/repos/CMakePiExample/build",
-            "dependsOn": "Build Target",
+            "command": "scp -r ${workspaceRoot}/install pi@192.168.1.103:~/repos/CMakePiExample/build",
+            "dependsOn": "Install Target",
             "problemMatcher": []
+        },
+        {
+            "label": "Install Target",
+            "type": "shell",
+            "dependsOn": "Build Target",
+            "command": "cmake --install .",
+            "options": {
+                "cwd": "${workspaceRoot}/build/${input:BUILD_TYPE}"
+            }
         }
     ],
     "inputs": [
