@@ -1,0 +1,71 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Create Output Directory",
+            "type": "shell",
+            "command": "mkdir -p ${workspaceRoot}/build/${input:BUILD_TYPE}"
+        },
+        {
+            "label": "Generate CMake Cache",
+            "type": "shell",
+            "group": "build",
+            "command": "cmake -DCMAKE_TOOLCHAIN_FILE=../../Toolchain-RaspberryPi.cmake -DCMAKE_BUILD_TYPE=${input:BUILD_TYPE} ../../",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/build/${input:BUILD_TYPE}"
+            },
+            "dependsOn": "Create Output Directory"
+        },
+        {
+            "label": "Build Target",
+            "type": "shell",
+            "group": "build",
+            "command": "cmake --build . -- -j 4",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "options": {
+                "cwd": "${workspaceRoot}/build/${input:BUILD_TYPE}"
+            },
+            "dependsOn": "Generate CMake Cache"
+        },
+        {
+            "label": "Rebuild Target",
+            "type": "shell",
+            "dependsOn": [
+                "Clean Output",
+                "Build Target"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Output",
+            "type": "shell",
+            "command": "rm -rf ${workspaceRoot}/build/${input:BUILD_TYPE}",
+            "problemMatcher": []
+        },
+        {
+            "label": "Copy File To Remote",
+            "type": "shell",
+            "command": "scp -r ${workspaceRoot}/build/${input:BUILD_TYPE} pi@192.168.1.103:~/repos/CMakePiExample/build",
+            "dependsOn": "Build Target",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+          "id": "BUILD_TYPE",
+          "type": "pickString",
+          "description": "Build for Debug or Release",
+          "options": [
+              "Debug",
+              "Release"
+          ]
+        }
+    ]
+}
